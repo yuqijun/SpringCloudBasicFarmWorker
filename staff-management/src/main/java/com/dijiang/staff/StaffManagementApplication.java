@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
 @MapperScan("com.dijiang.staff.mybatisplus")
-@ComponentScan(basePackages = {"com.dijiang.staff.interfacer","com.dijiang.common.service","com.dijiang.staff.controller","com.dijiang.common.exception","com.dijiang.staff.mybatisplus.sys.service","com.dijiang.staff.component"})
+@ComponentScan(basePackages = {"com.dijiang.staff.interfacer","com.dijiang.common.service","com.dijiang.staff.controller","com.dijiang.common.exception","com.dijiang.staff.mybatisplus.sys.service","com.dijiang.staff.component","com.dijiang.staff.config"})
+@MapperScan(basePackages = "com.dijiang.staff.dao")
 @EnableDiscoveryClient
 @EnableFeignClients
 @Configuration("com.dijiang.staff.interfacer")

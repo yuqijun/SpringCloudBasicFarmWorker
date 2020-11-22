@@ -8,33 +8,16 @@ import com.dijiang.common.service.FastDFSFileOperator;
 
 import com.dijiang.common.util.DjTokenUtil;
 import com.dijiang.common.util.JsonUtil;
-import com.dijiang.staff.component.CustomUserDetailsService;
-//import com.dijiang.staff.component.JWTTokenUtils;
-import com.dijiang.staff.interfacer.GetCommon;
 import com.dijiang.staff.model.RequestToken;
 import com.dijiang.staff.model.ResultUtil;
-//import com.dijiang.staff.model.SelfUserEntity;
-import com.dijiang.staff.mybatisplus.sys.entity.TbStaff;
-import jdk.nashorn.internal.parser.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.access.prepost.PostAuthorize;
-//import org.springframework.security.access.prepost.PreAuthorize;
-//import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -50,8 +33,8 @@ public class HolleController extends BaseController {
     @Autowired
     private FastDFSFileOperator fast;
 
-    @Autowired
-    private GetCommon getCommon;
+//    @Autowired
+//    private GetCommon getCommon;
 
 
 
@@ -89,13 +72,13 @@ public class HolleController extends BaseController {
     }
 
 
-    @GetMapping(value = "/commonnacos")
-    public Object nacos(){
-        log.info("进入 测试调用其他模块服务控制器--"+getCommon);
-        Object obj =  getCommon.nacos();
-        log.info("FeginClient  /nacos/nacos 返回的数据"+obj.toString());
-        return JSON.toJSONString(getCommon.nacos());
-    }
+//    @GetMapping(value = "/commonnacos")
+//    public Object nacos(){
+//        log.info("进入 测试调用其他模块服务控制器--"+getCommon);
+//        Object obj =  getCommon.nacos();
+//        log.info("FeginClient  /nacos/nacos 返回的数据"+obj.toString());
+//        return JSON.toJSONString(getCommon.nacos());
+//    }
 
     @GetMapping("/")
     public Object hello(){

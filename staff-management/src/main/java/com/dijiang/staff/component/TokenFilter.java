@@ -18,7 +18,6 @@ import com.alibaba.fastjson.JSONObject;
 //import com.dijiang.staff.config.JWTConfig;
 import com.dijiang.staff.model.RequestToken;
 import com.dijiang.staff.model.SelfUserEntity;
-import com.dijiang.staff.mybatisplus.sys.entity.TbStaff;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
