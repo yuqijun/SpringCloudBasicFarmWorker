@@ -1,6 +1,7 @@
 package com.dijiang.staff.interfacer;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @FeignClient("common-consumer")
+@Component
 public interface GetCommon {
     @RequestMapping("/nacos/nacos")
     public String nacos();

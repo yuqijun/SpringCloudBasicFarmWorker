@@ -44,38 +44,56 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-            http
-                .cors()
-                .and()
-                // 取消跨站请求伪造防护
-                .csrf().disable()
-                    /* 警用session  cookie */
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-                // 所有人都能访问登录接口
+        http
+                .csrf()
+                .disable()
                 .authorizeRequests()
-                .antMatchers("/hello/userLogin").permitAll()
+                .anyRequest()
+                .permitAll()
                 .and()
-                .formLogin()
-                .loginProcessingUrl("/hello/userLogin")
-                .failureForwardUrl("/hello/loginFail")
-                .successForwardUrl("/hello/loginSuccess")
-                .and()
-                .authorizeRequests()
-                .antMatchers("/product/**").hasAuthority("USER")
-                .antMatchers("/admin/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic()
-                .and()
-                .exceptionHandling()
-                .accessDeniedPage("/hello/noPermission")
-//                    .accessDeniedHandler(userAuthAccessDeniedHandler)
-                .and()
-                .headers().cacheControl();
-            http.addFilter(new TokenFilter(authenticationManager()));
+                .logout()
+                .permitAll();
     }
+
+
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//            http
+//                .cors()
+//                .and()
+//                // 取消跨站请求伪造防护
+//                .csrf().disable()
+//                    /* 警用session  cookie */
+////                .sessionManagement()
+////                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+////                .and()
+//                // 所有人都能访问登录接口
+//
+//
+//                .authorizeRequests()
+//                .antMatchers("/hello/userLogin").permitAll()
+//                .and()
+//                .formLogin()
+//                .loginProcessingUrl("/hello/userLogin")
+//                .failureForwardUrl("/hello/loginFail")
+//                .successForwardUrl("/hello/loginSuccess")
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/product/**").hasAuthority("USER")
+//                .antMatchers("/admin/**").hasAuthority("ADMIN")
+//                .anyRequest().authenticated()
+//                .and()
+//                .httpBasic()
+//                .and()
+//                .exceptionHandling()
+//                .accessDeniedPage("/hello/noPermission")
+////                    .accessDeniedHandler(userAuthAccessDeniedHandler)
+//                .and()
+//                .headers().cacheControl();
+//            http.addFilter(new TokenFilter(authenticationManager()));
+//    }
 }

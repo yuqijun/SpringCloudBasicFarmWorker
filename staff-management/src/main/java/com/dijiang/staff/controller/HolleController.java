@@ -8,6 +8,7 @@ import com.dijiang.common.service.FastDFSFileOperator;
 
 import com.dijiang.common.util.DjTokenUtil;
 import com.dijiang.common.util.JsonUtil;
+import com.dijiang.staff.interfacer.GetCommon;
 import com.dijiang.staff.model.RequestToken;
 import com.dijiang.staff.model.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ import java.util.*;
 
 @Slf4j
 @RestController
+@Controller
 @RequestMapping("/hello")
 //作用于类级别的安全设置
 //@Secured({"ROLE_normal","ROLE_admin"})
@@ -33,8 +36,8 @@ public class HolleController extends BaseController {
     @Autowired
     private FastDFSFileOperator fast;
 
-//    @Autowired
-//    private GetCommon getCommon;
+    @Autowired
+    private GetCommon getCommon;
 
 
 
@@ -72,13 +75,13 @@ public class HolleController extends BaseController {
     }
 
 
-//    @GetMapping(value = "/commonnacos")
-//    public Object nacos(){
-//        log.info("进入 测试调用其他模块服务控制器--"+getCommon);
-//        Object obj =  getCommon.nacos();
-//        log.info("FeginClient  /nacos/nacos 返回的数据"+obj.toString());
-//        return JSON.toJSONString(getCommon.nacos());
-//    }
+    @GetMapping(value = "/commonnacos")
+    public Object nacos(){
+        log.info("进入 测试调用其他模块服务控制器--"+getCommon);
+        Object obj =  getCommon.nacos();
+        log.info("FeginClient  /nacos/nacos 返回的数据"+obj.toString());
+        return JSON.toJSONString(getCommon.nacos());
+    }
 
     @GetMapping("/")
     public Object hello(){

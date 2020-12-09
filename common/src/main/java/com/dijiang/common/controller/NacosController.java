@@ -17,14 +17,9 @@ import java.util.Optional;
 @RequestMapping("/nacos")
 @RestController
 public class NacosController {
-    //生产者
-//    @RequestMapping(value = "/nacos",produces = "application/json")
     @RequestMapping(value = "/nacos")
     public String nacos(){
         System.err.println("进入  /nacos/nacos");
-//        Map <String,String> map = new HashMap<>();
-//        map.put("cookie","15845646545");
-//        return map;
         return "FeginClientNacosSuccess";
     }
 }
