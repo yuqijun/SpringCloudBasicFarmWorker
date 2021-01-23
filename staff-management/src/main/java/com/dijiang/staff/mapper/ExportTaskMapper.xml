@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ane56.ueq.api.dao.ExportTaskMapper">
+
+    <sql id="Export_Task_List">
+        id,
+        file_id,
+        file_name,
+        user_name,
+        export_status,
+        application_id,
+        modular_id,
+        create_time,
+        application_name,
+        modular_name,
+        site_code
+    </sql>
+
+    <sql id="Export_Task_Detail">
+        id,
+        file_id,
+        export_status,
+        application_id,
+        modular_id,
+        file_name,
+        file_size,
+        sql_statement,
+        completion_time,
+        remake,
+        user_name,
+        delete_mark,
+        create_time,
+        create_user_id,
+        update_user_id,
+        application_name,
+        modular_name,
+        site_code,
+        site_name
+    </sql>
+
+    <!--查询导出列表-->
+    <select id="selectPages" resultType="com.ane56.uep.common.model.vo.ExportTaskVo" parameterType="com.ane56.uep.common.model.query.ExportTaskSelectQuery">
+        select
+        <include refid="Export_Task_Detail" />
+        from tb_export_task
+        <where>
+            delete_mark = 1
+            <if test="applicationId != null and applicationId != '' ">
+                and application_id = #{applicationId}
+            </if>
+            <if test="modularId != null and modularId != '' ">
+                and modular_id = #{modularId}
+            </if>
+            <if test="fileName != null and fileName != '' ">
+                and file_name like concat('%',#{fileName},'%')
+            </if>
+            <if test="userName != null and userName != '' ">
+                and user_name like concat('%',#{userName},'%')
+            </if>
+            <if test="exportStatus != null">
+                and export_status = #{exportStatus}
+            </if>
+            <if test="applicationName != null and applicationName != '' ">
+                and application_name like concat('%',#{applicationName},'%')
+            </if>
+            <if test="modularName != null and modularName != '' ">
+                and modular_name like concat('%',#{modularName},'%')
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} and #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!--根据应用id查询统计明细-->
+    <select id="selectByApplicationIdPage" resultType="com.ane56.uep.common.model.vo.ExportDetailVo" parameterType="com.ane56.uep.common.model.query.ExportDetailQuery">
+        select
+        <include refid="Export_Task_Detail"></include>
+        from tb_export_task
+        <where>
+            delete_mark = 1
+            and application_id = #{applicationId}
+            <if test="modularId != null and modularId != '' ">
+                and modular_id = #{modularId}
+            </if>
+            <if test="fileName != null and fileName != '' ">
+                and file_name like concat('%',#{fileName},'%')
+            </if>
+            <if test="userName != null and userName != '' ">
+                and user_name like concat('%',#{userName},'%')
+            </if>
+            <if test="exportStatus != null">
+                and export_status = #{exportStatus}
+            </if>
+            <if test="applicationName != null and applicationName != '' ">
+                and application_name like concat('%',#{applicationName},'%')
+            </if>
+            <if test="modularName != null and modularName != '' ">
+                and modular_name = #{modularName}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} and #{endTime}
+            </if>
+        </where>
+    </select>
+    <!--根据id查询导出明细-->
+    <select id="getIds" resultType="com.ane56.uep.common.model.vo.ExportDetailIdVo" parameterType="com.ane56.uep.common.model.query.ExportTaskSelectQuery">
+        select
+        <include refid="Export_Task_Detail" />
+        from tb_export_task
+        where delete_mark = 1
+        and id = #{id}
+    </select>
+
+    <!--统计导出数据-->
+    <select id="statisticsExport" resultType="com.ane56.uep.common.model.vo.StatisticsExportVo" parameterType="com.ane56.uep.common.model.query.StatisticsExportTimeQuery">
+        select
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            ad.modular_id,
+            ad.modular_name,
+        </if>
+        ad.application_id,
+        ad.application_name,
+        et.allTimes,
+        et.goingTimes,
+        et.successTimes,
+        et.faildTimes,
+        et.initializeTimes
+        from
+        tb_application_datasource ad
+        LEFT JOIN
+        (SELECT
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            a.modular_id AS modular_id,
+            a.modular_name AS modular_name,
+        </if>
+        a.application_id AS application_id,
+        a.application_name AS application_name,
+        a.allTimes AS allTimes,
+        b.goingTimes AS goingTimes,
+        d.successTimes AS successTimes,
+        e.faildTimes AS faildTimes,
+        f.initializeTimes AS initializeTimes
+        FROM
+        (SELECT
+        application_id,
+        application_name,
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            modular_id,
+            modular_name,
+        </if>
+        count(id) AS allTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="applicationName != null and applicationName != '' ">
+                AND application_name like concat('%',#{applicationName},'%')
+            </if>
+            <if test="modularId != null and modularId != '' ">
+                AND modular_id = #{modularId}
+            </if>
+            <if test="modularName != null and modularName != '' ">
+                AND modular_name like concat('%',#{modularName},'%')
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} and #{endTime}
+            </if>
+        </where>
+
+        <choose>
+            <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                GROUP BY
+                modular_id,
+                modular_name,
+                application_id,
+                application_name
+                ) a
+            </when>
+            <otherwise>
+                GROUP BY
+                application_id,
+                application_name
+                ) a
+            </otherwise>
+        </choose>
+
+        LEFT JOIN
+        (SELECT
+        application_id,
+        application_name,
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            modular_id,
+            modular_name,
+        </if>
+        count(id) AS goingTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 1
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="modularId != null and modularId != '' ">
+                AND modular_id = #{modularId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} and #{endTime}
+            </if>
+        </where>
+
+        <choose>
+            <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                GROUP BY
+                modular_id,
+                modular_name,
+                application_id,
+                application_name
+                ) b
+            </when>
+            <otherwise>
+                GROUP BY
+                application_id,
+                application_name
+                ) b
+            </otherwise>
+        </choose>
+
+
+        ON
+        b.application_id = a.application_id
+        and
+        b.application_name = a.application_name
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            and
+            b.modular_id = a.modular_id
+            and
+            b.modular_name = a.modular_name
+        </if>
+        LEFT JOIN
+        (SELECT
+        application_id,
+        application_name,
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            modular_id,
+            modular_name,
+        </if>
+        count(id) AS successTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 2
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="modularId != null and modularId != '' ">
+                AND modular_id = #{modularId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+
+        <choose>
+            <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                GROUP BY
+                modular_id,
+                modular_name,
+                application_id,
+                application_name
+                ) d
+            </when>
+            <otherwise>
+                GROUP BY
+                application_id,
+                application_name
+                ) d
+            </otherwise>
+        </choose>
+
+        ON
+        d.application_id = a.application_id
+        and
+        d.application_name = a.application_name
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            and
+            d.modular_id = a.modular_id
+            and
+            d.modular_name = a.modular_name
+        </if>
+        LEFT JOIN
+        (SELECT
+        application_id,
+        application_name,
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            modular_id,
+            modular_name,
+        </if>
+        count(id) as faildTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 3
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="modularId != null and modularId != '' ">
+                AND modular_id = #{modularId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+
+        <choose>
+            <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                GROUP BY
+                modular_id,
+                modular_name,
+                application_id,
+                application_name
+                ) e
+            </when>
+            <otherwise>
+                GROUP BY
+                application_id,
+                application_name
+                ) e
+
+            </otherwise>
+        </choose>
+
+        ON
+        e.application_id = a.application_id
+        and
+        e.application_name = a.application_name
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            and
+            e.modular_id = a.modular_id
+            and
+            e.modular_name = a.modular_name
+        </if>
+
+        LEFT JOIN
+        (SELECT
+        application_id,
+        application_name,
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            modular_id,
+            modular_name,
+        </if>
+        count(id) as initializeTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 0
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="modularId != null and modularId != '' ">
+                AND modular_id = #{modularId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+
+        <choose>
+            <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                GROUP BY
+                modular_id,
+                modular_name,
+                application_id,
+                application_name
+                ) f
+            </when>
+            <otherwise>
+                GROUP BY
+                application_id,
+                application_name
+                ) f
+
+            </otherwise>
+        </choose>
+
+        ON
+        f.application_id = a.application_id
+        and
+        f.application_name = a.application_name
+        <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+            and
+            f.modular_id = a.modular_id
+            and
+            f.modular_name = a.modular_name
+        </if>) et
+        on
+        et.application_id = ad.application_id
+        <if test="modularId != null and modularId !='' ">
+        and
+        et.modular_id = ad.modular_id
+        </if>
+
+        <choose>
+            <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                GROUP BY
+                ad.modular_id,
+                ad.modular_name,
+                ad.application_id,
+                ad.application_name,
+                et.allTimes,
+                et.goingTimes,
+                et.successTimes,
+                et.faildTimes,
+                et.initializeTimes
+            </when>
+            <otherwise>
+                GROUP BY
+                ad.application_id,
+                ad.application_name,
+                et.allTimes,
+                et.goingTimes,
+                et.successTimes,
+                et.faildTimes,
+                et.initializeTimes
+            </otherwise>
+        </choose>
+    </select>
+
+
+
+
+    <!-- <select id="statisticsExport" resultType="com.ane56.uep.common.model.vo.StatisticsExportVo" parameterType="com.ane56.uep.common.model.bo.StatisticsExportTimeBo">
+        SELECT
+        a.application_id,
+        ad.application_name,
+        a.allTimes,
+        b.goingTimes,
+        d.successTimes,
+        e.faildTimes
+        FROM
+        (SELECT
+        application_id,
+        count(id) AS allTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} and #{endTime}
+            </if>
+        </where>
+        GROUP BY
+        application_id
+        ) a
+        LEFT JOIN
+        tb_application_datasource ad ON ad.application_id = a.application_id
+        LEFT JOIN
+        (SELECT
+        application_id,
+        count(id) AS goingTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 1
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} and #{endTime}
+            </if>
+        </where>
+        GROUP BY
+        application_id
+        ) b
+        ON
+        b.application_id = a.application_id
+        LEFT JOIN
+        (SELECT
+        application_id,
+        count(id) AS successTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 2
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        GROUP BY
+        application_id
+        ) d
+        ON
+        d.application_id = a.application_id
+        LEFT JOIN
+        (SELECT
+        application_id,
+        count(id) as faildTimes
+        FROM
+        tb_export_task
+        <where>
+            delete_mark = 1
+            AND export_status = 3
+            <if test="applicationId != null and applicationId != '' ">
+                AND application_id = #{applicationId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        GROUP BY
+        application_id
+        ) e
+        ON
+        e.application_id = a.application_id
+        where delete_mark = 1
+    </select>-->
+
+    <!--    <select id="statisticsExport" resultType="com.ane56.uep.common.model.vo.StatisticsExportVo" parameterType="com.ane56.uep.common.model.query.StatisticsExportTimeQuery">
+            SELECT
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                a.modular_id,
+                a.modular_name,
+            </if>
+            a.application_id,
+            a.application_name,
+            a.allTimes,
+            b.goingTimes,
+            d.successTimes,
+            e.faildTimes,
+            f.initializeTimes
+            FROM
+            (SELECT
+            application_id,
+            application_name,
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                modular_id,
+                modular_name,
+            </if>
+            count(id) AS allTimes
+            FROM
+            tb_export_task
+            <where>
+                delete_mark = 1
+                <if test="applicationId != null and applicationId != '' ">
+                    AND application_id = #{applicationId}
+                </if>
+                <if test="applicationName != null and applicationName != '' ">
+                    AND application_name like concat('%',#{applicationName},'%')
+                </if>
+                <if test="modularId != null and modularId != '' ">
+                    AND modular_id = #{modularId}
+                </if>
+                <if test="modularName != null and modularName != '' ">
+                    AND modular_name like concat('%',#{modularName},'%')
+                </if>
+                <if test="startTime != null and endTime != null">
+                    AND create_time BETWEEN #{startTime} and #{endTime}
+                </if>
+            </where>
+
+            <choose>
+                <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                    GROUP BY
+                    modular_id,
+                    modular_name,
+                    application_id,
+                    application_name
+                    ) a
+                </when>
+                <otherwise>
+                    GROUP BY
+                    application_id,
+                    application_name
+                    ) a
+                </otherwise>
+            </choose>
+
+
+
+            LEFT JOIN
+            (SELECT
+            application_id,
+            application_name,
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                modular_id,
+                modular_name,
+            </if>
+            count(id) AS goingTimes
+            FROM
+            tb_export_task
+            <where>
+                delete_mark = 1
+                AND export_status = 1
+                <if test="applicationId != null and applicationId != '' ">
+                    AND application_id = #{applicationId}
+                </if>
+                <if test="modularId != null and modularId != '' ">
+                    AND modular_id = #{modularId}
+                </if>
+                <if test="startTime != null and endTime != null">
+                    AND create_time BETWEEN #{startTime} and #{endTime}
+                </if>
+            </where>
+
+            <choose>
+                <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                    GROUP BY
+                    modular_id,
+                    modular_name,
+                    application_id,
+                    application_name
+                    ) b
+                </when>
+                <otherwise>
+                    GROUP BY
+                    application_id,
+                    application_name
+                    ) b
+                </otherwise>
+            </choose>
+
+
+            ON
+            b.application_id = a.application_id
+            and
+            b.application_name = a.application_name
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                and
+                b.modular_id = a.modular_id
+                and
+                b.modular_name = a.modular_name
+            </if>
+            LEFT JOIN
+            (SELECT
+            application_id,
+            application_name,
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                modular_id,
+                modular_name,
+            </if>
+            count(id) AS successTimes
+            FROM
+            tb_export_task
+            <where>
+                delete_mark = 1
+                AND export_status = 2
+                <if test="applicationId != null and applicationId != '' ">
+                    AND application_id = #{applicationId}
+                </if>
+                <if test="modularId != null and modularId != '' ">
+                    AND modular_id = #{modularId}
+                </if>
+                <if test="startTime != null and endTime != null">
+                    AND create_time BETWEEN #{startTime} AND #{endTime}
+                </if>
+            </where>
+
+            <choose>
+                <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                    GROUP BY
+                    modular_id,
+                    modular_name,
+                    application_id,
+                    application_name
+                    ) d
+                </when>
+                <otherwise>
+                    GROUP BY
+                    application_id,
+                    application_name
+                    ) d
+                </otherwise>
+            </choose>
+
+            ON
+            d.application_id = a.application_id
+            and
+            d.application_name = a.application_name
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                and
+                d.modular_id = a.modular_id
+                and
+                d.modular_name = a.modular_name
+            </if>
+            LEFT JOIN
+            (SELECT
+            application_id,
+            application_name,
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                modular_id,
+                modular_name,
+            </if>
+            count(id) as faildTimes
+            FROM
+            tb_export_task
+            <where>
+                delete_mark = 1
+                AND export_status = 3
+                <if test="applicationId != null and applicationId != '' ">
+                    AND application_id = #{applicationId}
+                </if>
+                <if test="modularId != null and modularId != '' ">
+                    AND modular_id = #{modularId}
+                </if>
+                <if test="startTime != null and endTime != null">
+                    AND create_time BETWEEN #{startTime} AND #{endTime}
+                </if>
+            </where>
+
+            <choose>
+                <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                    GROUP BY
+                    modular_id,
+                    modular_name,
+                    application_id,
+                    application_name
+                    ) e
+                </when>
+                <otherwise>
+                    GROUP BY
+                    application_id,
+                    application_name
+                    ) e
+
+                </otherwise>
+            </choose>
+
+            ON
+            e.application_id = a.application_id
+            and
+            e.application_name = a.application_name
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                and
+                e.modular_id = a.modular_id
+                and
+                e.modular_name = a.modular_name
+            </if>
+
+            LEFT JOIN
+            (SELECT
+            application_id,
+            application_name,
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                modular_id,
+                modular_name,
+            </if>
+            count(id) as initializeTimes
+            FROM
+            tb_export_task
+            <where>
+                delete_mark = 1
+                AND export_status = 0
+                <if test="applicationId != null and applicationId != '' ">
+                    AND application_id = #{applicationId}
+                </if>
+                <if test="modularId != null and modularId != '' ">
+                    AND modular_id = #{modularId}
+                </if>
+                <if test="startTime != null and endTime != null">
+                    AND create_time BETWEEN #{startTime} AND #{endTime}
+                </if>
+            </where>
+
+            <choose>
+                <when test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                    GROUP BY
+                    modular_id,
+                    modular_name,
+                    application_id,
+                    application_name
+                    ) f
+                </when>
+                <otherwise>
+                    GROUP BY
+                    application_id,
+                    application_name
+                    ) f
+
+                </otherwise>
+            </choose>
+
+            ON
+            f.application_id = a.application_id
+            and
+            f.application_name = a.application_name
+            <if test="modularName!= null and modularName !='' || modularId != null and modularId !='' ">
+                and
+                f.modular_id = a.modular_id
+                and
+                f.modular_name = a.modular_name
+            </if>
+        </select>-->
+</mapper>

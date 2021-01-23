@@ -44,6 +44,20 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-core -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.4.7</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -81,6 +95,14 @@
             <artifactId>sentinel-transport-simple-http</artifactId>
             <version>1.5.2</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba.csp/sentinel-spring-webmvc-adapter -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-spring-webmvc-adapter</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+
         <!--alibaba sentinel 热点限流-->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
@@ -136,14 +158,24 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.0</version>
+<!--            <version>3.4.0</version>-->
+            <version>3.0.7</version>
         </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
-            <version>3.4.0</version>
+<!--            <version>3.4.0</version>-->
+            <version>3.0.7</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.baomidou</groupId>-->
+<!--            <artifactId>mybatis-plus</artifactId>-->
+<!--            <version>3.3.0</version>-->
+<!--        </dependency>-->
+
+
 
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -184,13 +216,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus -->
-        <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus</artifactId>
-            <version>3.3.0</version>
-        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>

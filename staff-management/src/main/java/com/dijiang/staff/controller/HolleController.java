@@ -1,18 +1,25 @@
 package com.dijiang.staff.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dijiang.common.controller.BaseController;
+import com.dijiang.common.entity.PageVo;
+import com.dijiang.common.entity.ReExportRecord;
 import com.dijiang.common.entity.ResponseResult;
-import com.dijiang.common.exception.BusinessException;
+import com.dijiang.common.entity.query.ReExportStatisticsQuery;
 import com.dijiang.common.service.FastDFSFileOperator;
 
 import com.dijiang.common.util.DjTokenUtil;
 import com.dijiang.common.util.JsonUtil;
+import com.dijiang.staff.dao.ReExportRecordMapper;
 import com.dijiang.staff.interfacer.GetCommon;
 import com.dijiang.staff.model.RequestToken;
 import com.dijiang.staff.model.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,6 +46,8 @@ public class HolleController extends BaseController {
     @Autowired
     private GetCommon getCommon;
 
+    @Autowired
+    private ReExportRecordMapper mapper;
 
 
 //    @Autowired
@@ -72,6 +81,67 @@ public class HolleController extends BaseController {
         result.put("key1", "仪表盘初始化");
         result.put("key2", "方向盘初始化");
         return ResultUtil.resultSuccess(result);
+    }
+
+    @GetMapping("/testCo")
+    public ResultUtil testCo(@RequestBody ReExportStatisticsQuery query){
+        IPage<ReExportRecord> iPage = new Page<>(query.getPage(),query.getPageSize());
+        LambdaQueryWrapper<ReExportRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        if(null!=query.getApplicationId()){
+            lambdaQueryWrapper.eq(ReExportRecord::getApplicationId, query.getApplicationId());
+        }
+        if(null!=query.getApplicationName()){
+            lambdaQueryWrapper.eq(ReExportRecord::getApplicationName, query.getApplicationName());
+        }
+
+        if(null!=query.getModularId()){
+            lambdaQueryWrapper.eq(ReExportRecord::getModularId, query.getModularId());
+        }
+        if(null!=query.getModularName()){
+            lambdaQueryWrapper.eq(ReExportRecord::getModularName, query.getModularName());
+        }
+
+        if(null!=query.getSiteCode()){
+            lambdaQueryWrapper.eq(ReExportRecord::getSiteCode, query.getSiteCode());
+        }
+
+        if(null!=query.getSiteName()){
+            lambdaQueryWrapper.eq(ReExportRecord::getSiteName, query.getSiteName());
+        }
+        if(null!=query.getCreateUserId()){
+            lambdaQueryWrapper.eq(ReExportRecord::getCreateUserId, query.getCreateUserId());
+        }
+
+        if(null!=query.getUserName()){
+            lambdaQueryWrapper.eq(ReExportRecord::getUserName, query.getUserName());
+        }
+
+//        if(null!=query.getFileId()){
+//            lambdaQueryWrapper.eq(ReExportRecord::getFileId, query.getFileId());
+//        }
+//        if(null!=query.getFileName()) {
+//            lambdaQueryWrapper.eq(ReExportRecord::getFileName, query.getFileName());
+//        }
+        if(null!=query.getExportId()){
+            lambdaQueryWrapper.eq(ReExportRecord::getParentExportId,query.getExportId());
+        }
+        /* 只有开始时间 */
+        if(null!=query.getStartTime()&&null==query.getEndTime()){
+            log.info("走了11111111111111111111111");
+            lambdaQueryWrapper.gt(ReExportRecord::getCreateTime,query.getStartTime());
+        }
+        /* 只有结束时间 */
+        if(null!=query.getEndTime()&&null==query.getStartTime()){
+            log.info("走了2222222222222222222212");
+            lambdaQueryWrapper.lt(ReExportRecord::getCreateTime,query.getEndTime());
+        }
+        /* 开始时间和结束时间都有 */
+        if(null!=query.getStartTime()&&null!=query.getEndTime()){
+            log.info("走了333333333333333333333333333333333333333");
+            lambdaQueryWrapper.between(ReExportRecord::getCreateTime,query.getStartTime(),query.getEndTime());
+        }
+        return ResultUtil.resultSuccess( mapper.selectPagesafdasfa(iPage,lambdaQueryWrapper));
     }
 
 
@@ -108,40 +178,40 @@ public class HolleController extends BaseController {
     }
 
 
-    @GetMapping("/exception")
-    public void exception () {
-        System.err.println("进入异常控制器");
-        throw new  BusinessException(409,"业务异常");
-    }
-
-    @GetMapping("/accountlogin")
-    public String  login(){
-        return "account/loing";
-    }
-
-    @RequestMapping("/authorLogin")
-    public String authorLogin (){
-        return "authorLogin =========";
-    }
-
-
-    @RequestMapping("/loginSuccess")
-    public String loginSuccess(HttpServletRequest request,HttpServletResponse response){
-        Map map = new HashMap();
-        try {
-            map.put("request---token：", request.getHeader("JWTToken"));
-        }catch (Exception e){
-            throw  new BusinessException(400,"登录成功请求头没有 token");
-        }
-
-        try {
-            map.put("request---token：", response.getHeader("JWTToken"));
-        }catch (Exception e){
-            throw  new BusinessException(400,"登陆成功响应头没有 token");
-        }
-
-        return "登录成功......";
-    }
+//    @GetMapping("/exception")
+//    public void exception () {
+//        System.err.println("进入异常控制器");
+//        throw new  BusinessException(409,"业务异常");
+//    }
+//
+//    @GetMapping("/accountlogin")
+//    public String  login(){
+//        return "account/loing";
+//    }
+//
+//    @RequestMapping("/authorLogin")
+//    public String authorLogin (){
+//        return "authorLogin =========";
+//    }
+//
+//
+//    @RequestMapping("/loginSuccess")
+//    public String loginSuccess(HttpServletRequest request,HttpServletResponse response){
+//        Map map = new HashMap();
+//        try {
+//            map.put("request---token：", request.getHeader("JWTToken"));
+//        }catch (Exception e){
+//            throw  new BusinessException(400,"登录成功请求头没有 token");
+//        }
+//
+//        try {
+//            map.put("request---token：", response.getHeader("JWTToken"));
+//        }catch (Exception e){
+//            throw  new BusinessException(400,"登陆成功响应头没有 token");
+//        }
+//
+//        return "登录成功......";
+//    }
 
     @RequestMapping("/loginFail")
     public String loginFail(){

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @FeignClient("common-consumer")
-@Component
 public interface GetCommon {
     @RequestMapping("/nacos/nacos")
     public String nacos();

@@ -1,4 +1,12 @@
 spring:
+  rabbitmq:
+    host: 101.132.143.228
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: manual
   cloud:
     nacos:
       discovery:
@@ -11,11 +19,13 @@ spring:
       #取消控制台懒加载
       eager: true
   #  统一异常处理捕捉
-  mvc:
-    throw-exception-if-no-handler-found: true
+#  mvc:
+#    throw-exception-if-no-handler-found: true
   datasource:
     druid:
-      url: jdbc:mysql://localhost:3306/dijiang?serverTimezone=GMT%2B8&characterEncoding=utf-8&useAffectedRows=true&useSSL=false&allowPublicKeyRetrieval=true
+#      url: jdbc:mysql://101.132.143.228:3306/mysql?serverTimezone=GMT%2B8&characterEncoding=utf-8&useAffectedRows=true&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://101.132.143.228:3306/uep_test?serverTimezone=GMT%2B8&characterEncoding=utf-8&useAffectedRows=true&useSSL=false&allowPublicKeyRetrieval=true
+
       username: root
 #      password: admin123
       password: 123456
@@ -70,8 +80,11 @@ dijiang:
     service: http://localhost:8080/
 
 mybatis-plus:
+  mapper-locations: classpath*:com.dijiang.staff.mapper/*Mapper.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
 
 fdfs:
   so-timeout: 1501
@@ -100,7 +113,7 @@ jwt:
 app:
   id: SampleApp
 apollo:
-  meta: http://192.168.1.107:8080
+  meta: http://localhost:8080     #连接不上看看是不是ipv4 地址变了
   bootstrap:
     enabled: true
     eagerLoad:
@@ -109,3 +122,4 @@ apollo:
 Token:
   headerToken: djtoken
 
+time: 0/5 * * * * ?

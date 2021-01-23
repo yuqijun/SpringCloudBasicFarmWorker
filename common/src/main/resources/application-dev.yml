@@ -9,7 +9,7 @@ spring:
     throw-exception-if-no-handler-found: true
   datasource:
     druid:
-      url: jdbc:mysql://localhost:3306/db_disk?serverTimezone=UTC&characterEncoding=utf-8&useAffectedRows=true&useSSL=false
+      url: jdbc:mysql://localhost:3306/mysql?serverTimezone=UTC&characterEncoding=utf-8&useAffectedRows=true&useSSL=false
       username: root
 #      password: admin123
       password: 123456

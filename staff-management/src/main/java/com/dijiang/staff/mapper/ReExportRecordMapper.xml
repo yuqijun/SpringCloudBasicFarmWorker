@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dijiang.staff.dao.ReExportRecordMapper">
+	<select id="selectPagesafdasfcdsfsdfsdfsfsfsdfsfa" resultType="com.dijiang.common.entity.ReExportCount">
+        select  t1.parent_export_id AS id,task.file_id,task.file_name,t1.total,t1.initCount,t1.excepCount from (
+		select * from(
+			select  parent_export_id,count(id) AS total
+			from
+			(select * from tb_export_task ${ew.customSqlSegment} AND reexport_mark = "true" )
+			group by parent_export_id
+		) total
+			LEFT JOIN (select  parent_export_id AS intiId,count(id) AS initCount
+			from
+			(select * from tb_export_task ${ew.customSqlSegment} AND reexport_mark = "true" AND export_status = "1" )
+			group by parent_export_id) init
+			ON total.parent_export_id =  init.intiId
+
+			LEFT JOIN (select  parent_export_id AS normalId,count(id) AS normalCount
+			from
+			(select * from tb_export_task ${ew.customSqlSegment} AND reexport_mark = "true" AND export_status = "2" )
+			group by parent_export_id) normal
+			ON total.parent_export_id =  normal.normalId
+
+			LEFT JOIN (select  parent_export_id AS excepId,count(id) AS excepCount
+			from
+			(select * from tb_export_task ${ew.customSqlSegment} AND reexport_mark = "true" AND export_status = "3" )
+			group by parent_export_id) excep
+			ON total.parent_export_id =  excep.excepId
+	)t1
+	LEFT JOIN tb_export_task task
+	ON t1.parent_export_id =  task.id
+    </select>
+
+	<select id="getoneone" resultType="ReExportRecord">
+		select * from tb_reexport_record
+	</select>
+</mapper>
